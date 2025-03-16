@@ -1,10 +1,10 @@
 package dao.impl;
 
-import dao.AuthorDao;
+import dao.PublisherDao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
-import entity.Author;
-import entity.Book;
+import entity.Publisher;
+import entity.Magazine;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,69 +12,69 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AuthorDaoImpl implements AuthorDao {
+public class PublisherDaoImpl implements PublisherDao {
     private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
 
     @Override
-    public List<Author> findAll() {
-        List<Author> listOfAuthors = new ArrayList<>();
+    public List<Publisher> findAll() {
+        List<Publisher> listOfPublishers = new ArrayList<>();
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM authors")) {
+                     "SELECT * FROM publishers")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Author author = new Author();
-                author.setId(resultSet.getInt("id"));
-                author.setName(resultSet.getString("name"));
-                author.setBooks(findAllBooksForAuthor(author.getId()));
+                Publisher publisher = new Publisher();
+                publisher.setId(resultSet.getInt("id"));
+                publisher.setName(resultSet.getString("name"));
+                publisher.setMagazines(findAllMagazinesForPublisher(publisher.getId()));
 
-                listOfAuthors.add(author);
+                listOfPublishers.add(publisher);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return listOfAuthors;
+        return listOfPublishers;
     }
 
     @Override
-    public Author findById(Integer id) {
-        Author author = null;
+    public Publisher findById(Integer id) {
+        Publisher publisher = null;
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM authors WHERE id = ?")) {
+                     "SELECT * FROM publishers WHERE id = ?")) {
 
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                author = new Author();
-                author.setId(resultSet.getInt("id"));
-                author.setName(resultSet.getString("name"));
-                author.setBooks(findAllBooksForAuthor(author.getId()));
+                publisher = new Publisher();
+                publisher.setId(resultSet.getInt("id"));
+                publisher.setName(resultSet.getString("name"));
+                publisher.setMagazines(findAllMagazinesForPublisher(publisher.getId()));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return author;
+        return publisher;
     }
 
     @Override
-    public void save(Author author) {
+    public void save(Publisher publisher) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO authors (name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO publishers (name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            preparedStatement.setString(1, author.getName());
+            preparedStatement.setString(1, publisher.getName());
             preparedStatement.executeUpdate();
 
-            if (author.getBooks() != null) {
+            if (publisher.getMagazines() != null) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
                 Integer generatedKey = null;
@@ -83,8 +83,8 @@ public class AuthorDaoImpl implements AuthorDao {
                     generatedKey = resultSet.getInt("id");
                 }
 
-                removeBooksFromAuthor(generatedKey);
-                addBooksToAuthor(generatedKey, author.getBooks());
+                removeMagazinesFromPublisher(generatedKey);
+                addMagazinesToPublisher(generatedKey, publisher.getMagazines());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -92,17 +92,17 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public void update(Author author) {
+    public void update(Publisher publisher) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "UPDATE authors SET name=? WHERE id=?")) {
+                     "UPDATE publishers SET name=? WHERE id=?")) {
 
-            preparedStatement.setString(1, author.getName());
-            preparedStatement.setInt(2, author.getId());
+            preparedStatement.setString(1, publisher.getName());
+            preparedStatement.setInt(2, publisher.getId());
             preparedStatement.executeUpdate();
 
-            removeBooksFromAuthor(author.getId());
-            addBooksToAuthor(author.getId(), author.getBooks());
+            removeMagazinesFromPublisher(publisher.getId());
+            addMagazinesToPublisher(publisher.getId(), publisher.getMagazines());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -112,7 +112,7 @@ public class AuthorDaoImpl implements AuthorDao {
     public void delete(Integer id) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM authors WHERE id=?")) {
+                     "DELETE FROM publishers WHERE id=?")) {
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
@@ -121,41 +121,41 @@ public class AuthorDaoImpl implements AuthorDao {
         }
     }
 
-    private Set<Book> findAllBooksForAuthor(Integer id) {
-        Set<Book> books = new HashSet<>();
+    private Set<Magazine> findAllMagazinesForPublisher(Integer id) {
+        Set<Magazine> magazines = new HashSet<>();
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT books.id, books.title, books.quantity FROM books_authors INNER JOIN books " +
-                             "ON books_authors.book_id = books.id WHERE books_authors.author_id = ?")) {
+                     "SELECT magazines.id, magazines.title, magazines.quantity FROM magazines INNER JOIN publishers " +
+                             "ON magazines.publisher_id = publishers.id WHERE publishers.id = ?")) {
 
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Book book = new Book();
-                book.setId(resultSet.getInt("id"));
-                book.setTitle(resultSet.getString("title"));
-                book.setQuantity(resultSet.getInt("quantity"));
+                Magazine magazine = new Magazine();
+                magazine.setId(resultSet.getInt("id"));
+                magazine.setTitle(resultSet.getString("title"));
+                magazine.setQuantity(resultSet.getInt("quantity"));
 
-                books.add(book);
+                magazines.add(magazine);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return books;
+        return magazines;
     }
 
-    private void addBooksToAuthor(Integer id, Set<Book> books) {
+    private void addMagazinesToPublisher(Integer id, Set<Magazine> magazines) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO books_authors (book_id, author_id) VALUES (?, ?)")) {
+                     "UPDATE magazines SET publisher_id=? WHERE id=?")) {
 
-            for (Book book : books) {
-                preparedStatement.setInt(1, book.getId());
-                preparedStatement.setInt(2, id);
+            for (Magazine magazine : magazines) {
+                preparedStatement.setInt(1, id);
+                preparedStatement.setInt(2, magazine.getId());
                 preparedStatement.addBatch();
             }
 
@@ -165,10 +165,10 @@ public class AuthorDaoImpl implements AuthorDao {
         }
     }
 
-    private void removeBooksFromAuthor(Integer id) {
+    private void removeMagazinesFromPublisher(Integer id) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM books_authors WHERE author_id=?")) {
+                     "UPDATE magazines SET publisher_id=null WHERE id=?")) {
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();

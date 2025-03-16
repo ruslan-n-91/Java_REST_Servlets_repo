@@ -71,22 +71,24 @@ public class BookDaoImpl implements BookDao {
     public void save(Book book) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO books (title, quantity) VALUES(?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO books (title, quantity) VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, book.getTitle());
             preparedStatement.setInt(2, book.getQuantity());
             preparedStatement.executeUpdate();
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if (book.getAuthors() != null) {
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
-            Integer generatedKey = null;
+                Integer generatedKey = null;
 
-            if (resultSet.next()) {
-                generatedKey = resultSet.getInt("id");
+                if (resultSet.next()) {
+                    generatedKey = resultSet.getInt("id");
+                }
+
+                removeAuthorsFromBook(generatedKey);
+                addAuthorsToBook(generatedKey, book.getAuthors());
             }
-
-            removeAuthorsFromBook(generatedKey);
-            addAuthorsToBook(generatedKey, book.getAuthors());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -152,7 +154,7 @@ public class BookDaoImpl implements BookDao {
     private void addAuthorsToBook(Integer id, Set<Author> authors) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO books_authors (book_id, author_id) VALUES(?, ?)")) {
+                     "INSERT INTO books_authors (book_id, author_id) VALUES (?, ?)")) {
 
             for (Author author : authors) {
                 preparedStatement.setInt(1, id);

@@ -1,22 +1,21 @@
 package servlet.dto;
 
 import java.util.Objects;
-import java.util.Set;
 
-public class BookOutgoingDto {
+public class MagazineOutgoingDto {
     private Integer id;
     private String title;
     private Integer quantity;
-    private Set<AuthorOutgoingDto> authors;
+    private PublisherOutgoingDto publisher;
 
-    public BookOutgoingDto() {
+    public MagazineOutgoingDto() {
     }
 
-    public BookOutgoingDto(Integer id, String title, Integer quantity, Set<AuthorOutgoingDto> authors) {
+    public MagazineOutgoingDto(Integer id, String title, Integer quantity, PublisherOutgoingDto publisher) {
         this.id = id;
         this.title = title;
         this.quantity = quantity;
-        this.authors = authors;
+        this.publisher = publisher;
     }
 
     public Integer getId() {
@@ -31,31 +30,31 @@ public class BookOutgoingDto {
         return quantity;
     }
 
-    public Set<AuthorOutgoingDto> getAuthors() {
-        return authors;
+    public PublisherOutgoingDto getPublisher() {
+        return publisher;
     }
 
     @Override
     public String toString() {
-        return "BookOutgoingDto{" +
+        return "MagazineOutgoingDto{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", quantity=" + quantity +
-                ", authors=" + authors +
+                ", publisher=" + publisher +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        BookOutgoingDto that = (BookOutgoingDto) o;
+        MagazineOutgoingDto that = (MagazineOutgoingDto) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(title, that.title)
-                && Objects.equals(authors, that.authors);
+                && Objects.equals(publisher, that.publisher);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, authors);
+        return Objects.hash(id, title, publisher);
     }
 }

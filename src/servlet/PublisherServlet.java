@@ -3,16 +3,16 @@ package servlet;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServlet;
-import servlet.dto.AuthorIncomingDto;
-import servlet.dto.BookOutgoingDto;
-import servlet.dto.BookIncomingDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import service.BookService;
-import service.impl.BookServiceImpl;
+import service.PublisherService;
+import service.impl.PublisherServiceImpl;
+import servlet.dto.PublisherIncomingDto;
+import servlet.dto.PublisherOutgoingDto;
+import servlet.dto.MagazineIncomingDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,10 +22,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@WebServlet(name = "BookServlet", urlPatterns = "/books/*")
-public class BookServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-    private final BookService bookService = new BookServiceImpl();
+@WebServlet(name = "PublisherServlet", urlPatterns = "/publishers/*")
+public class PublisherServlet extends HttpServlet {
+    private final transient Gson gson = new Gson();
+    private final transient PublisherService publisherService = new PublisherServiceImpl();
+
+    private static final String RESPONSE_SET_CONTEXT_ON_CATCH = "text/html;charset=UTF-8";
+    private static final String PUBLISHER_MAGAZINES = "magazines";
 
     private void setResponseHeader(HttpServletResponse response) {
         // method sets json content type and utf-8 character encoding for the http response
@@ -51,20 +54,20 @@ public class BookServlet extends HttpServlet {
         setResponseHeader(response);
 
         String responseString = "";
-        List<BookOutgoingDto> listOfBooks = new ArrayList<>();
+        List<PublisherOutgoingDto> listOfPublishers = new ArrayList<>();
 
         try {
             if (request.getParameter("id") == null) {
-                listOfBooks = bookService.findAll();
+                listOfPublishers = publisherService.findAll();
             } else {
-                Integer bookId = Integer.parseInt(request.getParameter("id"));
-                listOfBooks.add(bookService.findById(bookId));
+                Integer publisherId = Integer.parseInt(request.getParameter("id"));
+                listOfPublishers.add(publisherService.findById(publisherId));
             }
 
-            List<String> listOfBooksJson = listOfBooks.stream().map(gson::toJson).toList();
-            responseString = listOfBooksJson.toString();
+            List<String> listOfPublishersJson = listOfPublishers.stream().map(gson::toJson).toList();
+            responseString = listOfPublishersJson.toString();
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -84,29 +87,28 @@ public class BookServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+            if (jsonObject.has("name")) {
+                String name = jsonObject.get("name").getAsString();
 
-                Set<AuthorIncomingDto> authors = new HashSet<>();
+                Set<MagazineIncomingDto> magazines = new HashSet<>();
 
-                if (jsonObject.has("authors")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("authors")) {
+                if (jsonObject.has(PUBLISHER_MAGAZINES)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(PUBLISHER_MAGAZINES)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
                         if (temp.has("id")) {
-                            authors.add(new AuthorIncomingDto(temp.get("id").getAsInt(), null, null));
+                            magazines.add(new MagazineIncomingDto(temp.get("id").getAsInt(), null,
+                                    null, null));
                         }
                     }
                 }
 
-                BookIncomingDto bookIncomingDto = new BookIncomingDto(null, title, quantity, authors);
-                bookService.save(bookIncomingDto);
+                PublisherIncomingDto publisherIncomingDto = new PublisherIncomingDto(null, name, magazines);
+                publisherService.save(publisherIncomingDto);
 
-                responseString = gson.toJson(bookIncomingDto);
+                responseString = gson.toJson(publisherIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -127,30 +129,29 @@ public class BookServlet extends HttpServlet {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
             if (jsonObject.has("id")
-                    && jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
+                    && jsonObject.has("name")) {
                 Integer id = jsonObject.get("id").getAsInt();
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+                String name = jsonObject.get("name").getAsString();
 
-                Set<AuthorIncomingDto> authors = new HashSet<>();
+                Set<MagazineIncomingDto> magazines = new HashSet<>();
 
-                if (jsonObject.has("authors")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("authors")) {
+                if (jsonObject.has(PUBLISHER_MAGAZINES)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(PUBLISHER_MAGAZINES)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
                         if (temp.has("id")) {
-                            authors.add(new AuthorIncomingDto(temp.get("id").getAsInt(), null, null));
+                            magazines.add(new MagazineIncomingDto(temp.get("id").getAsInt(), null,
+                                    null, null));
                         }
                     }
                 }
 
-                BookIncomingDto bookIncomingDto = new BookIncomingDto(id, title, quantity, authors);
-                bookService.update(bookIncomingDto);
+                PublisherIncomingDto publisherIncomingDto = new PublisherIncomingDto(id, name, magazines);
+                publisherService.update(publisherIncomingDto);
 
-                responseString = gson.toJson(bookIncomingDto);
+                responseString = gson.toJson(publisherIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -173,12 +174,12 @@ public class BookServlet extends HttpServlet {
             if (jsonObject.has("id")) {
                 Integer id = jsonObject.get("id").getAsInt();
 
-                bookService.delete(id);
+                publisherService.delete(id);
 
                 responseString = jsonObject.toString();
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }

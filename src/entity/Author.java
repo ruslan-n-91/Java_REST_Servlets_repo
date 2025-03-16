@@ -3,6 +3,13 @@ package entity;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Author entity
+ * <p>
+ * Relation:
+ * <p>
+ * Many to Many - Author to Book
+ */
 public class Author {
     private Integer id;
     private String name;
@@ -43,11 +50,7 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", books=" + books +
-                '}';
+        return "Author{" + "id=" + id + ", name='" + name + '\'' + ", books=" + books + '}';
     }
 
     @Override

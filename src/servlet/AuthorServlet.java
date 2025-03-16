@@ -93,7 +93,8 @@ public class AuthorServlet extends HttpServlet {
                     for (JsonElement jsonElement : jsonObject.getAsJsonArray("books")) {
                         JsonObject temp = jsonElement.getAsJsonObject();
                         if (temp.has("id")) {
-                            books.add(new BookIncomingDto(temp.get("id").getAsInt(), null, null, null));
+                            books.add(new BookIncomingDto(temp.get("id").getAsInt(), null,
+                                    null, null));
                         }
                     }
                 }
@@ -101,7 +102,7 @@ public class AuthorServlet extends HttpServlet {
                 AuthorIncomingDto authorIncomingDto = new AuthorIncomingDto(null, name, books);
                 authorService.save(authorIncomingDto);
 
-                responseString = jsonObject.toString();
+                responseString = gson.toJson(authorIncomingDto);
             }
         } catch (Exception e) {
             response.setContentType("text/html;charset=UTF-8");
@@ -112,7 +113,6 @@ public class AuthorServlet extends HttpServlet {
         PrintWriter printWriter = response.getWriter();
         printWriter.println(responseString);
         printWriter.flush();
-        //response.sendRedirect(request.getContextPath() + "/authors");
     }
 
     @Override
@@ -144,7 +144,7 @@ public class AuthorServlet extends HttpServlet {
                 AuthorIncomingDto authorIncomingDto = new AuthorIncomingDto(id, name, books);
                 authorService.update(authorIncomingDto);
 
-                responseString = jsonObject.toString();
+                responseString = gson.toJson(authorIncomingDto);
             }
         } catch (Exception e) {
             response.setContentType("text/html;charset=UTF-8");
@@ -155,7 +155,6 @@ public class AuthorServlet extends HttpServlet {
         PrintWriter printWriter = response.getWriter();
         printWriter.println(responseString);
         printWriter.flush();
-        //response.sendRedirect(request.getContextPath() + "/authors");
     }
 
     @Override
@@ -184,6 +183,5 @@ public class AuthorServlet extends HttpServlet {
         PrintWriter printWriter = response.getWriter();
         printWriter.println(responseString);
         printWriter.flush();
-        //response.sendRedirect(request.getContextPath() + "/authors");
     }
 }

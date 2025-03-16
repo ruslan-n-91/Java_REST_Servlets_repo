@@ -51,12 +51,11 @@ public class BookIncomingDto {
         BookIncomingDto that = (BookIncomingDto) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(title, that.title)
-                && Objects.equals(quantity, that.quantity)
                 && Objects.equals(authors, that.authors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, quantity, authors);
+        return Objects.hash(id, title, authors);
     }
 }

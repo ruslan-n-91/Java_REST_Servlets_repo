@@ -1,29 +1,28 @@
 package entity;
 
 import java.util.Objects;
-import java.util.Set;
 
 /**
- * Book entity
+ * Magazine entity
  * <p>
  * Relation:
  * <p>
- * Many to Many - Book to Author
+ * Many to One - Magazine to Publisher
  */
-public class Book {
+public class Magazine {
     private Integer id;
     private String title;
     private Integer quantity;
-    private Set<Author> authors;
+    private Publisher publisher;
 
-    public Book() {
+    public Magazine() {
     }
 
-    public Book(Integer id, String title, Integer quantity, Set<Author> authors) {
+    public Magazine(Integer id, String title, Integer quantity, Publisher publisher) {
         this.id = id;
         this.title = title;
         this.quantity = quantity;
-        this.authors = authors;
+        this.publisher = publisher;
     }
 
     public Integer getId() {
@@ -50,30 +49,35 @@ public class Book {
         this.quantity = quantity;
     }
 
-    public Set<Author> getAuthors() {
-        return authors;
+    public Publisher getPublisher() {
+        return publisher;
     }
 
-    public void setAuthors(Set<Author> authors) {
-        this.authors = authors;
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     @Override
     public String toString() {
-        return "Book{" + "id=" + id + ", title='" + title + '\'' + ", quantity=" + quantity + ", authors=" + authors + '}';
+        return "Magazine{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", quantity=" + quantity +
+                ", publisher=" + publisher +
+                '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Book book = (Book) o;
-        return Objects.equals(id, book.id)
-                && Objects.equals(title, book.title)
-                && Objects.equals(authors, book.authors);
+        Magazine magazine = (Magazine) o;
+        return Objects.equals(id, magazine.id)
+                && Objects.equals(title, magazine.title)
+                && Objects.equals(publisher, magazine.publisher);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, authors);
+        return Objects.hash(id, title, publisher);
     }
 }
