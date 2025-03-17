@@ -21,8 +21,14 @@ import java.util.List;
 
 @WebServlet(name = "MagazineServlet", urlPatterns = "/magazines/*")
 public class MagazineServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-    private final MagazineService magazineService = new MagazineServiceImpl();
+    private final transient Gson gson = new Gson();
+    private final transient MagazineService magazineService = new MagazineServiceImpl();
+
+    private static final String EXCEPTION_SET_CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String INCOMING_FIELD_ID = "id";
+    private static final String INCOMING_FIELD_TITLE = "title";
+    private static final String INCOMING_FIELD_QUANTITY = "quantity";
+    private static final String INCOMING_FIELD_PUBLISHER = "publisher";
 
     private void setResponseHeader(HttpServletResponse response) {
         // method sets json content type and utf-8 character encoding for the http response
@@ -61,7 +67,7 @@ public class MagazineServlet extends HttpServlet {
             List<String> listOfMagazinesJson = listOfMagazines.stream().map(gson::toJson).toList();
             responseString = listOfMagazinesJson.toString();
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -81,18 +87,19 @@ public class MagazineServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_TITLE)
+                    && jsonObject.has(INCOMING_FIELD_QUANTITY)) {
+                String title = jsonObject.get(INCOMING_FIELD_TITLE).getAsString();
+                Integer quantity = jsonObject.get(INCOMING_FIELD_QUANTITY).getAsInt();
 
                 PublisherIncomingDto publisher = new PublisherIncomingDto();
 
-                if (jsonObject.has("publisher")) {
-                    JsonObject temp = jsonObject.getAsJsonObject("publisher");
+                if (jsonObject.has(INCOMING_FIELD_PUBLISHER)) {
+                    JsonObject temp = jsonObject.getAsJsonObject(INCOMING_FIELD_PUBLISHER);
 
-                    if (temp.has("id")) {
-                        publisher = new PublisherIncomingDto(temp.get("id").getAsInt(), null, null);
+                    if (temp.has(INCOMING_FIELD_ID)) {
+                        publisher = new PublisherIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(),
+                                null, null);
                     }
                 }
 
@@ -102,7 +109,7 @@ public class MagazineServlet extends HttpServlet {
                 responseString = gson.toJson(magazineIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -122,20 +129,21 @@ public class MagazineServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")
-                    && jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
-                Integer id = jsonObject.get("id").getAsInt();
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)
+                    && jsonObject.has(INCOMING_FIELD_TITLE)
+                    && jsonObject.has(INCOMING_FIELD_QUANTITY)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
+                String title = jsonObject.get(INCOMING_FIELD_TITLE).getAsString();
+                Integer quantity = jsonObject.get(INCOMING_FIELD_QUANTITY).getAsInt();
 
                 PublisherIncomingDto publisher = new PublisherIncomingDto();
 
-                if (jsonObject.has("publisher")) {
-                    JsonObject temp = jsonObject.getAsJsonObject("publisher");
+                if (jsonObject.has(INCOMING_FIELD_PUBLISHER)) {
+                    JsonObject temp = jsonObject.getAsJsonObject(INCOMING_FIELD_PUBLISHER);
 
-                    if (temp.has("id")) {
-                        publisher = new PublisherIncomingDto(temp.get("id").getAsInt(), null, null);
+                    if (temp.has(INCOMING_FIELD_ID)) {
+                        publisher = new PublisherIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(),
+                                null, null);
                     }
                 }
 
@@ -145,7 +153,7 @@ public class MagazineServlet extends HttpServlet {
                 responseString = gson.toJson(magazineIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -165,15 +173,15 @@ public class MagazineServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")) {
-                Integer id = jsonObject.get("id").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
 
                 magazineService.delete(id);
 
                 responseString = jsonObject.toString();
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }

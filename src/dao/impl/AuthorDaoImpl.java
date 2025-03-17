@@ -21,7 +21,7 @@ public class AuthorDaoImpl implements AuthorDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM authors")) {
+                     "SELECT id, name FROM authors")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -46,7 +46,7 @@ public class AuthorDaoImpl implements AuthorDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM authors WHERE id = ?")) {
+                     "SELECT id, name FROM authors WHERE id = ?")) {
 
             preparedStatement.setInt(1, id);
 
@@ -69,7 +69,7 @@ public class AuthorDaoImpl implements AuthorDao {
     public void save(Author author) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO authors (name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO authors (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, author.getName());
             preparedStatement.executeUpdate();
@@ -101,8 +101,10 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setInt(2, author.getId());
             preparedStatement.executeUpdate();
 
-            removeBooksFromAuthor(author.getId());
-            addBooksToAuthor(author.getId(), author.getBooks());
+            if (author.getBooks() != null) {
+                removeBooksFromAuthor(author.getId());
+                addBooksToAuthor(author.getId(), author.getBooks());
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -153,9 +155,10 @@ public class AuthorDaoImpl implements AuthorDao {
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "INSERT INTO books_authors (book_id, author_id) VALUES (?, ?)")) {
 
+            preparedStatement.setInt(2, id);
+
             for (Book book : books) {
                 preparedStatement.setInt(1, book.getId());
-                preparedStatement.setInt(2, id);
                 preparedStatement.addBatch();
             }
 

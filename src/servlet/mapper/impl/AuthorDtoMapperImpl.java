@@ -16,20 +16,20 @@ public class AuthorDtoMapperImpl implements AuthorDtoMapper {
     public Author mapToAuthor(AuthorIncomingDto authorIncomingDto) {
         return new Author(authorIncomingDto.getId(), authorIncomingDto.getName(),
                 authorIncomingDto.getBooks().stream()
-                        .map(bookIncomingDto -> {
-                            return new Book(bookIncomingDto.getId(), bookIncomingDto.getTitle(),
-                                    bookIncomingDto.getQuantity(), null);
-                        }).collect(Collectors.toSet()));
+                        .map(bookIncomingDto ->
+                                new Book(bookIncomingDto.getId(), bookIncomingDto.getTitle(),
+                                        bookIncomingDto.getQuantity(), null)
+                        ).collect(Collectors.toSet()));
     }
 
     @Override
     public AuthorOutgoingDto mapToAuthorOutgoingDto(Author author) {
         return new AuthorOutgoingDto(author.getId(), author.getName(),
                 author.getBooks().stream()
-                        .map(book -> {
-                            return new BookOutgoingDto(book.getId(), book.getTitle(),
-                                    book.getQuantity(), null);
-                        }).collect(Collectors.toSet()));
+                        .map(book ->
+                                new BookOutgoingDto(book.getId(), book.getTitle(),
+                                        book.getQuantity(), null)
+                        ).collect(Collectors.toSet()));
     }
 
     @Override

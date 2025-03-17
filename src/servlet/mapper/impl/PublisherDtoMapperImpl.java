@@ -17,8 +17,8 @@ public class PublisherDtoMapperImpl implements PublisherDtoMapper {
         return new Publisher(publisherIncomingDto.getId(), publisherIncomingDto.getName(),
                 publisherIncomingDto.getMagazines().stream()
                         .map(magazineIncomingDto ->
-                            new Magazine(magazineIncomingDto.getId(), magazineIncomingDto.getTitle(),
-                                    magazineIncomingDto.getQuantity(), null)
+                                new Magazine(magazineIncomingDto.getId(), magazineIncomingDto.getTitle(),
+                                        magazineIncomingDto.getQuantity(), null)
                         ).collect(Collectors.toSet()));
     }
 
@@ -27,8 +27,8 @@ public class PublisherDtoMapperImpl implements PublisherDtoMapper {
         return new PublisherOutgoingDto(publisher.getId(), publisher.getName(),
                 publisher.getMagazines().stream()
                         .map(magazine ->
-                            new MagazineOutgoingDto(magazine.getId(), magazine.getTitle(),
-                                    magazine.getQuantity(), null)
+                                new MagazineOutgoingDto(magazine.getId(), magazine.getTitle(),
+                                        magazine.getQuantity(), null)
                         ).collect(Collectors.toSet()));
     }
 

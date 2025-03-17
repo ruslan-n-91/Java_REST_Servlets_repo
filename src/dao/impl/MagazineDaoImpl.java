@@ -19,7 +19,7 @@ public class MagazineDaoImpl implements MagazineDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM magazines")) {
+                     "SELECT id, title, quantity FROM magazines")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -45,7 +45,7 @@ public class MagazineDaoImpl implements MagazineDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM magazines WHERE id = ?")) {
+                     "SELECT id, title, quantity FROM magazines WHERE id = ?")) {
 
             preparedStatement.setInt(1, id);
 
@@ -69,7 +69,7 @@ public class MagazineDaoImpl implements MagazineDao {
     public void save(Magazine magazine) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO magazines (title, quantity) VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO magazines (title, quantity) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, magazine.getTitle());
             preparedStatement.setInt(2, magazine.getQuantity());
@@ -149,13 +149,13 @@ public class MagazineDaoImpl implements MagazineDao {
         return publisher;
     }
 
-    private void updatePublisherForMagazine(Integer id, Integer publisher_id) {
+    private void updatePublisherForMagazine(Integer id, Integer publisherId) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "UPDATE magazines SET publisher_id=? WHERE id=?")) {
 
-            if (publisher_id != null) {
-                preparedStatement.setInt(1, publisher_id);
+            if (publisherId != null) {
+                preparedStatement.setInt(1, publisherId);
             } else {
                 preparedStatement.setNull(1, java.sql.Types.INTEGER);
             }

@@ -24,8 +24,14 @@ import java.util.Set;
 
 @WebServlet(name = "BookServlet", urlPatterns = "/books/*")
 public class BookServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-    private final BookService bookService = new BookServiceImpl();
+    private final transient Gson gson = new Gson();
+    private final transient BookService bookService = new BookServiceImpl();
+
+    private static final String EXCEPTION_SET_CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String INCOMING_FIELD_ID = "id";
+    private static final String INCOMING_FIELD_TITLE = "title";
+    private static final String INCOMING_FIELD_QUANTITY = "quantity";
+    private static final String INCOMING_FIELD_AUTHORS = "authors";
 
     private void setResponseHeader(HttpServletResponse response) {
         // method sets json content type and utf-8 character encoding for the http response
@@ -64,7 +70,7 @@ public class BookServlet extends HttpServlet {
             List<String> listOfBooksJson = listOfBooks.stream().map(gson::toJson).toList();
             responseString = listOfBooksJson.toString();
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -84,18 +90,19 @@ public class BookServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_TITLE)
+                    && jsonObject.has(INCOMING_FIELD_QUANTITY)) {
+                String title = jsonObject.get(INCOMING_FIELD_TITLE).getAsString();
+                Integer quantity = jsonObject.get(INCOMING_FIELD_QUANTITY).getAsInt();
 
                 Set<AuthorIncomingDto> authors = new HashSet<>();
 
-                if (jsonObject.has("authors")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("authors")) {
+                if (jsonObject.has(INCOMING_FIELD_AUTHORS)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_AUTHORS)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            authors.add(new AuthorIncomingDto(temp.get("id").getAsInt(), null, null));
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            authors.add(new AuthorIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(),
+                                    null, null));
                         }
                     }
                 }
@@ -106,7 +113,7 @@ public class BookServlet extends HttpServlet {
                 responseString = gson.toJson(bookIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -126,20 +133,21 @@ public class BookServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")
-                    && jsonObject.has("title")
-                    && jsonObject.has("quantity")) {
-                Integer id = jsonObject.get("id").getAsInt();
-                String title = jsonObject.get("title").getAsString();
-                Integer quantity = jsonObject.get("quantity").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)
+                    && jsonObject.has(INCOMING_FIELD_TITLE)
+                    && jsonObject.has(INCOMING_FIELD_QUANTITY)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
+                String title = jsonObject.get(INCOMING_FIELD_TITLE).getAsString();
+                Integer quantity = jsonObject.get(INCOMING_FIELD_QUANTITY).getAsInt();
 
                 Set<AuthorIncomingDto> authors = new HashSet<>();
 
-                if (jsonObject.has("authors")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("authors")) {
+                if (jsonObject.has(INCOMING_FIELD_AUTHORS)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_AUTHORS)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            authors.add(new AuthorIncomingDto(temp.get("id").getAsInt(), null, null));
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            authors.add(new AuthorIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(),
+                                    null, null));
                         }
                     }
                 }
@@ -150,7 +158,7 @@ public class BookServlet extends HttpServlet {
                 responseString = gson.toJson(bookIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -170,15 +178,15 @@ public class BookServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")) {
-                Integer id = jsonObject.get("id").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
 
                 bookService.delete(id);
 
                 responseString = jsonObject.toString();
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }

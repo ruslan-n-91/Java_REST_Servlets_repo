@@ -21,7 +21,7 @@ public class PublisherDaoImpl implements PublisherDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM publishers")) {
+                     "SELECT id, name FROM publishers")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -46,7 +46,7 @@ public class PublisherDaoImpl implements PublisherDao {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT * FROM publishers WHERE id = ?")) {
+                     "SELECT id, name FROM publishers WHERE id = ?")) {
 
             preparedStatement.setInt(1, id);
 
@@ -69,7 +69,7 @@ public class PublisherDaoImpl implements PublisherDao {
     public void save(Publisher publisher) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO publishers (name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
+                     "INSERT INTO publishers (name) VALUES (?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, publisher.getName());
             preparedStatement.executeUpdate();
@@ -101,8 +101,10 @@ public class PublisherDaoImpl implements PublisherDao {
             preparedStatement.setInt(2, publisher.getId());
             preparedStatement.executeUpdate();
 
-            removeMagazinesFromPublisher(publisher.getId());
-            addMagazinesToPublisher(publisher.getId(), publisher.getMagazines());
+            if (publisher.getMagazines() != null) {
+                removeMagazinesFromPublisher(publisher.getId());
+                addMagazinesToPublisher(publisher.getId(), publisher.getMagazines());
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -153,8 +155,9 @@ public class PublisherDaoImpl implements PublisherDao {
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "UPDATE magazines SET publisher_id=? WHERE id=?")) {
 
+            preparedStatement.setInt(1, id);
+
             for (Magazine magazine : magazines) {
-                preparedStatement.setInt(1, id);
                 preparedStatement.setInt(2, magazine.getId());
                 preparedStatement.addBatch();
             }

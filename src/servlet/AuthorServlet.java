@@ -24,8 +24,13 @@ import java.util.Set;
 
 @WebServlet(name = "AuthorServlet", urlPatterns = "/authors/*")
 public class AuthorServlet extends HttpServlet {
-    private final Gson gson = new Gson();
-    private final AuthorService authorService = new AuthorServiceImpl();
+    private final transient Gson gson = new Gson();
+    private final transient AuthorService authorService = new AuthorServiceImpl();
+
+    private static final String EXCEPTION_SET_CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String INCOMING_FIELD_ID = "id";
+    private static final String INCOMING_FIELD_NAME = "name";
+    private static final String INCOMING_FIELD_BOOKS = "books";
 
     private void setResponseHeader(HttpServletResponse response) {
         // method sets json content type and utf-8 character encoding for the http response
@@ -64,7 +69,7 @@ public class AuthorServlet extends HttpServlet {
             List<String> listOfAuthorsJson = listOfAuthors.stream().map(gson::toJson).toList();
             responseString = listOfAuthorsJson.toString();
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -84,16 +89,16 @@ public class AuthorServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("name")) {
-                String name = jsonObject.get("name").getAsString();
+            if (jsonObject.has(INCOMING_FIELD_NAME)) {
+                String name = jsonObject.get(INCOMING_FIELD_NAME).getAsString();
 
                 Set<BookIncomingDto> books = new HashSet<>();
 
-                if (jsonObject.has("books")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("books")) {
+                if (jsonObject.has(INCOMING_FIELD_BOOKS)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_BOOKS)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            books.add(new BookIncomingDto(temp.get("id").getAsInt(), null,
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            books.add(new BookIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(), null,
                                     null, null));
                         }
                     }
@@ -105,7 +110,7 @@ public class AuthorServlet extends HttpServlet {
                 responseString = gson.toJson(authorIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -125,18 +130,19 @@ public class AuthorServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")
-                    && jsonObject.has("name")) {
-                Integer id = jsonObject.get("id").getAsInt();
-                String name = jsonObject.get("name").getAsString();
+            if (jsonObject.has(INCOMING_FIELD_ID)
+                    && jsonObject.has(INCOMING_FIELD_NAME)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
+                String name = jsonObject.get(INCOMING_FIELD_NAME).getAsString();
 
                 Set<BookIncomingDto> books = new HashSet<>();
 
-                if (jsonObject.has("books")) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray("books")) {
+                if (jsonObject.has(INCOMING_FIELD_BOOKS)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_BOOKS)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            books.add(new BookIncomingDto(temp.get("id").getAsInt(), null, null, null));
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            books.add(new BookIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(),
+                                    null, null, null));
                         }
                     }
                 }
@@ -147,7 +153,7 @@ public class AuthorServlet extends HttpServlet {
                 responseString = gson.toJson(authorIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -167,15 +173,15 @@ public class AuthorServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")) {
-                Integer id = jsonObject.get("id").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
 
                 authorService.delete(id);
 
                 responseString = jsonObject.toString();
             }
         } catch (Exception e) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }

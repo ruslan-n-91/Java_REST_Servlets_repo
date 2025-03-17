@@ -27,8 +27,10 @@ public class PublisherServlet extends HttpServlet {
     private final transient Gson gson = new Gson();
     private final transient PublisherService publisherService = new PublisherServiceImpl();
 
-    private static final String RESPONSE_SET_CONTEXT_ON_CATCH = "text/html;charset=UTF-8";
-    private static final String PUBLISHER_MAGAZINES = "magazines";
+    private static final String EXCEPTION_SET_CONTENT_TYPE = "text/html;charset=UTF-8";
+    private static final String INCOMING_FIELD_ID = "id";
+    private static final String INCOMING_FIELD_NAME = "name";
+    private static final String INCOMING_FIELD_MAGAZINES = "magazines";
 
     private void setResponseHeader(HttpServletResponse response) {
         // method sets json content type and utf-8 character encoding for the http response
@@ -67,7 +69,7 @@ public class PublisherServlet extends HttpServlet {
             List<String> listOfPublishersJson = listOfPublishers.stream().map(gson::toJson).toList();
             responseString = listOfPublishersJson.toString();
         } catch (Exception e) {
-            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -87,16 +89,16 @@ public class PublisherServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("name")) {
-                String name = jsonObject.get("name").getAsString();
+            if (jsonObject.has(INCOMING_FIELD_NAME)) {
+                String name = jsonObject.get(INCOMING_FIELD_NAME).getAsString();
 
                 Set<MagazineIncomingDto> magazines = new HashSet<>();
 
-                if (jsonObject.has(PUBLISHER_MAGAZINES)) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(PUBLISHER_MAGAZINES)) {
+                if (jsonObject.has(INCOMING_FIELD_MAGAZINES)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_MAGAZINES)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            magazines.add(new MagazineIncomingDto(temp.get("id").getAsInt(), null,
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            magazines.add(new MagazineIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(), null,
                                     null, null));
                         }
                     }
@@ -108,7 +110,7 @@ public class PublisherServlet extends HttpServlet {
                 responseString = gson.toJson(publisherIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -128,18 +130,18 @@ public class PublisherServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")
-                    && jsonObject.has("name")) {
-                Integer id = jsonObject.get("id").getAsInt();
-                String name = jsonObject.get("name").getAsString();
+            if (jsonObject.has(INCOMING_FIELD_ID)
+                    && jsonObject.has(INCOMING_FIELD_NAME)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
+                String name = jsonObject.get(INCOMING_FIELD_NAME).getAsString();
 
                 Set<MagazineIncomingDto> magazines = new HashSet<>();
 
-                if (jsonObject.has(PUBLISHER_MAGAZINES)) {
-                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(PUBLISHER_MAGAZINES)) {
+                if (jsonObject.has(INCOMING_FIELD_MAGAZINES)) {
+                    for (JsonElement jsonElement : jsonObject.getAsJsonArray(INCOMING_FIELD_MAGAZINES)) {
                         JsonObject temp = jsonElement.getAsJsonObject();
-                        if (temp.has("id")) {
-                            magazines.add(new MagazineIncomingDto(temp.get("id").getAsInt(), null,
+                        if (temp.has(INCOMING_FIELD_ID)) {
+                            magazines.add(new MagazineIncomingDto(temp.get(INCOMING_FIELD_ID).getAsInt(), null,
                                     null, null));
                         }
                     }
@@ -151,7 +153,7 @@ public class PublisherServlet extends HttpServlet {
                 responseString = gson.toJson(publisherIncomingDto);
             }
         } catch (Exception e) {
-            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
@@ -171,15 +173,15 @@ public class PublisherServlet extends HttpServlet {
         try {
             JsonObject jsonObject = new Gson().fromJson(requestBody, JsonObject.class);
 
-            if (jsonObject.has("id")) {
-                Integer id = jsonObject.get("id").getAsInt();
+            if (jsonObject.has(INCOMING_FIELD_ID)) {
+                Integer id = jsonObject.get(INCOMING_FIELD_ID).getAsInt();
 
                 publisherService.delete(id);
 
                 responseString = jsonObject.toString();
             }
         } catch (Exception e) {
-            response.setContentType(RESPONSE_SET_CONTEXT_ON_CATCH);
+            response.setContentType(EXCEPTION_SET_CONTENT_TYPE);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             responseString = e.getMessage();
         }
