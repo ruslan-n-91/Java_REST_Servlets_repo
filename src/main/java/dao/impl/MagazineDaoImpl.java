@@ -11,7 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MagazineDaoImpl implements MagazineDao {
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private final ConnectionManager connectionManager;
+
+    public MagazineDaoImpl() {
+        connectionManager = new ConnectionManagerImpl();
+    }
+
+    public MagazineDaoImpl(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     /**
      * Returns a list of all magazines from the database.

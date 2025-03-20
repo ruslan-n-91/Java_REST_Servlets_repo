@@ -8,37 +8,34 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Class for managing a database connection. Thread safe singleton pattern was used.
+ * Class for managing a database connection.
  */
 public final class ConnectionManagerImpl implements ConnectionManager {
-    private static final Properties DB_PROPERTIES = new Properties();
-    private static final String DB_PROPERTIES_FILE = "db.properties";
+    private final Properties properties = new Properties();
 
+    private static final String DB_PROPERTIES_FILE = "db.properties";
     private static final String DB_DRIVER = "db.driver";
     private static final String DB_URL = "db.url";
     private static final String DB_USERNAME = "db.username";
     private static final String DB_PASSWORD = "db.password";
 
-    private static volatile ConnectionManagerImpl instance;
-
-    private ConnectionManagerImpl() {
+    /**
+     * Creates a connection manager and loads the database parameters from the file in the resources folder.
+     */
+    public ConnectionManagerImpl() {
         loadProperties();
         loadDriver(getProperty(DB_DRIVER));
     }
 
-    public static ConnectionManagerImpl getInstance() {
-        ConnectionManagerImpl localInstance = instance;
-
-        if (localInstance == null) {
-            synchronized (ConnectionManagerImpl.class) {
-                localInstance = instance;
-                if (localInstance == null) {
-                    instance = localInstance = new ConnectionManagerImpl();
-                }
-            }
-        }
-
-        return localInstance;
+    /**
+     * Creates a connection manager and uses passed parameters for the database connection.
+     */
+    public ConnectionManagerImpl(String driver, String url, String username, String password) {
+        properties.setProperty(DB_DRIVER, driver);
+        properties.setProperty(DB_URL, url);
+        properties.setProperty(DB_USERNAME, username);
+        properties.setProperty(DB_PASSWORD, password);
+        loadDriver(getProperty(DB_DRIVER));
     }
 
     @Override
@@ -49,24 +46,24 @@ public final class ConnectionManagerImpl implements ConnectionManager {
                 getProperty(DB_PASSWORD));
     }
 
+    private String getProperty(String property) {
+        return properties.getProperty(property);
+    }
+
+    private void loadProperties() {
+        try (InputStream dbPropertiesFile = ConnectionManagerImpl.class
+                .getClassLoader().getResourceAsStream(DB_PROPERTIES_FILE)) {
+            properties.load(dbPropertiesFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void loadDriver(String databaseDriver) {
         try {
             Class.forName(databaseDriver);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static void loadProperties() {
-        try (InputStream dbPropertiesFile = ConnectionManagerImpl.class
-                .getClassLoader().getResourceAsStream(DB_PROPERTIES_FILE)) {
-            DB_PROPERTIES.load(dbPropertiesFile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String getProperty(String key) {
-        return DB_PROPERTIES.getProperty(key);
     }
 }

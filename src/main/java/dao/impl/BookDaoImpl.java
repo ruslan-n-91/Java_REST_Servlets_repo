@@ -13,7 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 public class BookDaoImpl implements BookDao {
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private final ConnectionManager connectionManager;
+
+    public BookDaoImpl() {
+        connectionManager = new ConnectionManagerImpl();
+    }
+
+    public BookDaoImpl(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     /**
      * Returns a list of all books from the database.

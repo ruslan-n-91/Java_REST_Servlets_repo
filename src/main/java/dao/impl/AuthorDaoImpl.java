@@ -13,7 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 public class AuthorDaoImpl implements AuthorDao {
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private final ConnectionManager connectionManager;
+
+    public AuthorDaoImpl() {
+        connectionManager = new ConnectionManagerImpl();
+    }
+
+    public AuthorDaoImpl(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     /**
      * Returns a list of all authors from the database.

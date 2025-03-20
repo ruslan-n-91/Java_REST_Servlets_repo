@@ -13,7 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 public class PublisherDaoImpl implements PublisherDao {
-    private final ConnectionManager connectionManager = ConnectionManagerImpl.getInstance();
+    private final ConnectionManager connectionManager;
+
+    public PublisherDaoImpl() {
+        connectionManager = new ConnectionManagerImpl();
+    }
+
+    public PublisherDaoImpl(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
+    }
 
     /**
      * Returns a list of all publishers from the database.
