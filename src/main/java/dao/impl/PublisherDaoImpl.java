@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.PublisherDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Publisher;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PublisherDaoImpl implements PublisherDao {
+public class PublisherDaoImpl implements Dao<Publisher, Integer> {
     private final ConnectionManager connectionManager;
 
     public PublisherDaoImpl() {
@@ -36,8 +36,6 @@ public class PublisherDaoImpl implements PublisherDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and add all publishers (and their magazines)
-            // from the database to the list
             while (resultSet.next()) {
                 Publisher publisher = new Publisher();
                 publisher.setId(resultSet.getInt("id"));
@@ -68,8 +66,6 @@ public class PublisherDaoImpl implements PublisherDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and return the publisher (and its magazines)
-            // with the specified id from the database
             if (resultSet.next()) {
                 publisher = new Publisher();
                 publisher.setId(resultSet.getInt("id"));
@@ -95,8 +91,6 @@ public class PublisherDaoImpl implements PublisherDao {
             preparedStatement.setString(1, publisher.getName());
             preparedStatement.executeUpdate();
 
-            // if there are magazines for this publisher in the publisher entity
-            // then change relevant entries in the magazines table
             if (publisher.getMagazines() != null && !publisher.getMagazines().isEmpty()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
@@ -127,8 +121,6 @@ public class PublisherDaoImpl implements PublisherDao {
             preparedStatement.setInt(2, publisher.getId());
             preparedStatement.executeUpdate();
 
-            // remove magazines from the publisher
-            // then add magazines if any magazines in the publisher entity
             removeMagazinesFromPublisher(publisher.getId());
             addMagazinesToPublisher(publisher.getId(), publisher.getMagazines());
         } catch (SQLException e) {

@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.PublisherDao;
+import dao.Dao;
 import entity.Publisher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +21,7 @@ class PublisherServiceImplTest {
     PublisherServiceImpl publisherService;
 
     @Mock
-    PublisherDao mockPublisherDao;
+    Dao<Publisher, Integer> mockPublisherDao;
 
     @AfterEach
     void tearDown() {

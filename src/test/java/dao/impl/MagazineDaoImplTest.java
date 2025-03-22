@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.MagazineDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 
@@ -22,7 +22,7 @@ class MagazineDaoImplTest {
             "postgres:16-alpine"
     ).withInitScript("sql/sql_script.sql");
 
-    static MagazineDao magazineDao;
+    static Dao<Magazine, Integer> magazineDao;
 
     @BeforeAll
     static void setUp() {

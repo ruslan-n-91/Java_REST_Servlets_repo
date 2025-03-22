@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.MagazineDao;
+import dao.Dao;
 import entity.Magazine;
 import entity.Publisher;
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +19,7 @@ class MagazineServiceImplTest {
     MagazineServiceImpl magazineService;
 
     @Mock
-    MagazineDao mockMagazineDao;
+    Dao<Magazine, Integer> mockMagazineDao;
 
     @AfterEach
     void tearDown() {

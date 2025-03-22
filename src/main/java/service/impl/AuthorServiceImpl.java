@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.AuthorDao;
+import dao.Dao;
 import dao.impl.AuthorDaoImpl;
 import entity.Author;
 import service.AuthorService;
@@ -12,7 +12,7 @@ import servlet.mapper.impl.AuthorDtoMapperImpl;
 import java.util.List;
 
 public class AuthorServiceImpl implements AuthorService {
-    private AuthorDao authorDao = new AuthorDaoImpl();
+    private Dao<Author, Integer> authorDao = new AuthorDaoImpl();
     private AuthorDtoMapper authorDtoMapper = new AuthorDtoMapperImpl();
 
     @Override

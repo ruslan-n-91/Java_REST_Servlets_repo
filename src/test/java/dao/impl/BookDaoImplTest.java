@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.BookDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Author;
@@ -23,7 +23,7 @@ class BookDaoImplTest {
             "postgres:16-alpine"
     ).withInitScript("sql/sql_script.sql");
 
-    static BookDao bookDao;
+    static Dao<Book, Integer> bookDao;
 
     @BeforeAll
     static void setUp() {

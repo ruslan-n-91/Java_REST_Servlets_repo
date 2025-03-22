@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.AuthorDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Author;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class AuthorDaoImpl implements AuthorDao {
+public class AuthorDaoImpl implements Dao<Author, Integer> {
     private final ConnectionManager connectionManager;
 
     public AuthorDaoImpl() {
@@ -36,8 +36,6 @@ public class AuthorDaoImpl implements AuthorDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and add all authors (and their books)
-            // from the database to the list
             while (resultSet.next()) {
                 Author author = new Author();
                 author.setId(resultSet.getInt("id"));
@@ -67,8 +65,6 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and return the author (and his books)
-            // with the specified id from the database
             if (resultSet.next()) {
                 author = new Author();
                 author.setId(resultSet.getInt("id"));
@@ -94,8 +90,6 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setString(1, author.getName());
             preparedStatement.executeUpdate();
 
-            // if there are books for this author in the author entity
-            // then add relevant entries in the many-to-many relation table
             if (author.getBooks() != null && !author.getBooks().isEmpty()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
@@ -126,8 +120,6 @@ public class AuthorDaoImpl implements AuthorDao {
             preparedStatement.setInt(2, author.getId());
             preparedStatement.executeUpdate();
 
-            // remove books from the author
-            // then add books if any books in the author entity
             removeBooksFromAuthor(author.getId());
             addBooksToAuthor(author.getId(), author.getBooks());
         } catch (SQLException e) {

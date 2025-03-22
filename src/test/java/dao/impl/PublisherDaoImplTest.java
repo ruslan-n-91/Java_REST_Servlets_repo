@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.PublisherDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Magazine;
@@ -23,7 +23,7 @@ class PublisherDaoImplTest {
             "postgres:16-alpine"
     ).withInitScript("sql/sql_script.sql");
 
-    static PublisherDao publisherDao;
+    static Dao<Publisher, Integer> publisherDao;
 
     @BeforeAll
     static void setUp() {

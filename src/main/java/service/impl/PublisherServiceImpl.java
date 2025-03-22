@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.PublisherDao;
+import dao.Dao;
 import dao.impl.PublisherDaoImpl;
 import entity.Publisher;
 import service.PublisherService;
@@ -12,7 +12,7 @@ import servlet.mapper.impl.PublisherDtoMapperImpl;
 import java.util.List;
 
 public class PublisherServiceImpl implements PublisherService {
-    private PublisherDao publisherDao = new PublisherDaoImpl();
+    private Dao<Publisher, Integer> publisherDao = new PublisherDaoImpl();
     private PublisherDtoMapper publisherDtoMapper = new PublisherDtoMapperImpl();
 
     @Override

@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.BookDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Author;
@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BookDaoImpl implements BookDao {
+public class BookDaoImpl implements Dao<Book, Integer> {
     private final ConnectionManager connectionManager;
 
     public BookDaoImpl() {
@@ -36,8 +36,6 @@ public class BookDaoImpl implements BookDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and add all books (and their authors)
-            // from the database to the list
             while (resultSet.next()) {
                 Book book = new Book();
                 book.setId(resultSet.getInt("id"));
@@ -69,8 +67,6 @@ public class BookDaoImpl implements BookDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and return the book (and its authors)
-            // with the specified id from the database
             if (resultSet.next()) {
                 book = new Book();
                 book.setId(resultSet.getInt("id"));
@@ -98,8 +94,6 @@ public class BookDaoImpl implements BookDao {
             preparedStatement.setInt(2, book.getQuantity());
             preparedStatement.executeUpdate();
 
-            // if there are authors for this book in the book entity
-            // then add relevant entries in the many-to-many relation table
             if (book.getAuthors() != null && !book.getAuthors().isEmpty()) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
@@ -131,8 +125,6 @@ public class BookDaoImpl implements BookDao {
             preparedStatement.setInt(3, book.getId());
             preparedStatement.executeUpdate();
 
-            // remove authors from the book
-            // then add authors if any authors in the book entity
             removeAuthorsFromBook(book.getId());
             addAuthorsToBook(book.getId(), book.getAuthors());
         } catch (SQLException e) {

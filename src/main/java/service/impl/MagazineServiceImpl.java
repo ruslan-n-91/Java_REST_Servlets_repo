@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.MagazineDao;
+import dao.Dao;
 import dao.impl.MagazineDaoImpl;
 import entity.Magazine;
 import service.MagazineService;
@@ -12,7 +12,7 @@ import servlet.mapper.impl.MagazineDtoMapperImpl;
 import java.util.List;
 
 public class MagazineServiceImpl implements MagazineService {
-    private MagazineDao magazineDao = new MagazineDaoImpl();
+    private Dao<Magazine, Integer> magazineDao = new MagazineDaoImpl();
     private MagazineDtoMapper magazineDtoMapper = new MagazineDtoMapperImpl();
 
     @Override

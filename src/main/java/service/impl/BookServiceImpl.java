@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.BookDao;
+import dao.Dao;
 import dao.impl.BookDaoImpl;
 import service.BookService;
 import servlet.dto.BookOutgoingDto;
@@ -12,7 +12,7 @@ import servlet.mapper.impl.BookDtoMapperImpl;
 import java.util.List;
 
 public class BookServiceImpl implements BookService {
-    private BookDao bookDao = new BookDaoImpl();
+    private Dao<Book, Integer> bookDao = new BookDaoImpl();
     private BookDtoMapper bookDtoMapper = new BookDtoMapperImpl();
 
     @Override

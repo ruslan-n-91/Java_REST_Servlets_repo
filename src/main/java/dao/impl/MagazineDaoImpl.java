@@ -1,6 +1,6 @@
 package dao.impl;
 
-import dao.MagazineDao;
+import dao.Dao;
 import db.ConnectionManager;
 import db.ConnectionManagerImpl;
 import entity.Magazine;
@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MagazineDaoImpl implements MagazineDao {
+public class MagazineDaoImpl implements Dao<Magazine, Integer> {
     private final ConnectionManager connectionManager;
 
     public MagazineDaoImpl() {
@@ -34,8 +34,6 @@ public class MagazineDaoImpl implements MagazineDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and add all magazines (and their publishers)
-            // from the database to the list
             while (resultSet.next()) {
                 Magazine magazine = new Magazine();
                 magazine.setId(resultSet.getInt("id"));
@@ -67,8 +65,6 @@ public class MagazineDaoImpl implements MagazineDao {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // execute the sql query and return the magazine (and its publisher)
-            // with the specified id from the database
             if (resultSet.next()) {
                 magazine = new Magazine();
                 magazine.setId(resultSet.getInt("id"));
@@ -96,8 +92,6 @@ public class MagazineDaoImpl implements MagazineDao {
             preparedStatement.setInt(2, magazine.getQuantity());
             preparedStatement.executeUpdate();
 
-            // if there is publisher for this magazine in the magazine entity
-            // then change the relevant entry in the magazines table
             if (magazine.getPublisher() != null) {
                 ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
@@ -128,8 +122,6 @@ public class MagazineDaoImpl implements MagazineDao {
             preparedStatement.setInt(3, magazine.getId());
             preparedStatement.executeUpdate();
 
-            // if there is publisher for this magazine in the magazine entity
-            // then change the relevant entry in the magazines table
             updatePublisherForMagazine(magazine.getId(), magazine.getPublisher().getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);

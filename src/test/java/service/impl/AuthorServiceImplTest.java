@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.AuthorDao;
+import dao.Dao;
 import entity.Author;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +21,7 @@ class AuthorServiceImplTest {
     AuthorServiceImpl authorService;
 
     @Mock
-    AuthorDao mockAuthorDao;
+    Dao<Author, Integer> mockAuthorDao;
 
     @AfterEach
     void tearDown() {

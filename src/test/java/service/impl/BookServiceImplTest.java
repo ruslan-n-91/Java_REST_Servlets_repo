@@ -1,6 +1,6 @@
 package service.impl;
 
-import dao.BookDao;
+import dao.Dao;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class BookServiceImplTest {
     BookServiceImpl bookService;
 
     @Mock
-    BookDao mockBookDao;
+    Dao<Book, Integer> mockBookDao;
 
     @AfterEach
     void tearDown() {
