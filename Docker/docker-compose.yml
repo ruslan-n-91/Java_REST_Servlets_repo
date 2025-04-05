@@ -1,0 +1,38 @@
+services:
+  postgres_db:
+    image: postgres:17.4
+    container_name: postgres_db_container
+    environment:
+      POSTGRES_DB: "java_rest_library_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+        - ./sql_scripts:/docker-entrypoint-initdb.d
+        - postgres_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    expose:
+        - "5432"
+    networks:
+      - main
+      
+  tomcat:
+    image: tomcat
+    container_name: tomcat_server_container
+    volumes:
+     - ./Java_REST_servlets_project.war:/usr/local/tomcat/webapps/library.war
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres_db
+    links:
+      - postgres_db
+    networks:
+      - main
+      
+volumes:
+  postgres_db_data:
+     
+networks:
+  main:
